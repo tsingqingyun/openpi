@@ -325,6 +325,27 @@ class PromptFromLeRobotTask(DataTransformFn):
 
 
 @dataclasses.dataclass(frozen=True)
+class SpeedConditionedPrompt(DataTransformFn):
+    """Prefixes the language prompt with a textual speed condition when present."""
+
+    template: str = "Perform the task at {speed_label} speed. {prompt}"
+
+    def __call__(self, data: DataDict) -> DataDict:
+        if "prompt" not in data:
+            return data
+
+        speed_label = data.get("speed_label")
+        if speed_label is None and "speed" in data:
+            speed_label = f"{float(np.asarray(data['speed']).reshape(-1)[0]):g}x"
+        if speed_label is None:
+            return data
+
+        prompt = _scalar_to_text(data["prompt"])
+        speed_text = _scalar_to_text(speed_label).replace("p", ".")
+        return {**data, "prompt": self.template.format(speed_label=speed_text, prompt=prompt)}
+
+
+@dataclasses.dataclass(frozen=True)
 class PadStatesAndActions(DataTransformFn):
     """Zero-pads states and actions to the model action dimension."""
 
@@ -335,6 +356,22 @@ class PadStatesAndActions(DataTransformFn):
         if "actions" in data:
             data["actions"] = pad_to_dim(data["actions"], self.model_action_dim, axis=-1)
         return data
+
+
+def _scalar_to_text(value) -> str:
+    if isinstance(value, bytes):
+        return value.decode()
+    if isinstance(value, str):
+        return value
+
+    arr = np.asarray(value)
+    if arr.shape == ():
+        item = arr.item()
+    else:
+        item = arr.reshape(-1)[0]
+    if isinstance(item, bytes):
+        return item.decode()
+    return str(item)
 
 
 def flatten_dict(tree: at.PyTree) -> dict:
