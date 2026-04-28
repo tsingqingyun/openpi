@@ -812,7 +812,7 @@ _CONFIGS = [
         name="pi0_libero_various_speed",
         model=pi0_config.Pi0Config(),
         data=LeRobotVariousSpeedLiberoDataConfig(
-            repo_id="/mnt/data/fangyu/dataset/VariousSpeed/libero_spatial_speed_smoke",
+            repo_id="/mnt/data/fangyu/dataset/VariousSpeed/libero_spatial_speed_0p5_1p0_2p0_full_v1_20260428_204431",
             base_config=DataConfig(prompt_from_task=True),
             extra_delta_transform=False,
         ),
@@ -823,7 +823,7 @@ _CONFIGS = [
         name="pi05_libero_various_speed",
         model=pi0_config.Pi0Config(pi05=True, action_horizon=10, discrete_state_input=False),
         data=LeRobotVariousSpeedLiberoDataConfig(
-            repo_id="/mnt/data/fangyu/dataset/VariousSpeed/libero_spatial_speed_smoke",
+            repo_id="/mnt/data/fangyu/dataset/VariousSpeed/libero_spatial_speed_0p5_1p0_2p0_full_v1_20260428_204431",
             base_config=DataConfig(prompt_from_task=True),
             extra_delta_transform=False,
         ),
